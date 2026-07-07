@@ -11,6 +11,9 @@ print(os.listdir(path))
 csv_path = os.path.join(path, "IMDB Dataset.csv")
 df = pd.read_csv(csv_path)
 
+# Take a random sample of 600 reviews to keep runtime short for the demo recording
+df = df.sample(600, random_state=42).reset_index(drop=True)
+
 print(df.shape)
 print(df.columns.tolist())
 
@@ -20,8 +23,10 @@ import string
 def clean_text(text):
     
     #Cleans raw review text to prepare it for sentiment analysis.
-    #Lowercasing and removing punctuation reduce noise so the model
-    #treats words like 'Great' and 'great!' as the same token.
+    #Lowercasing, removing HTML tags, and removing punctuation reduce noise
+    #so the model treats words like 'Great' and 'great!' as the same token.
+
+    text = re.sub(r"<.*?>", " ", text)  # remove HTML tags like <br /> that appear in raw review text
     text = text.lower()  # normalize case so 'Good' and 'good' are treated the same
     text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)  # remove punctuation (commas, periods, etc.)
     text = re.sub(r"\s+", " ", text).strip()  # collapse multiple spaces into one and trim edges
