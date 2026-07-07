@@ -46,3 +46,22 @@ df['sentiment_score'] = df['clean_review'].apply(get_sentiment_score)
 
 # Quick sanity check: look at a few reviews alongside their scores
 print(df[['clean_review', 'sentiment_score']].head())
+
+def label_sentiment(score):
+    
+    #Converts a numeric polarity score into a human-readable label.
+    #Scores close to zero (between -0.1 and 0.1) are treated as neutral
+    #since TextBlob rarely returns an exact 0 even for balanced text.
+
+    if score > 0.1:
+        return "Positive"
+    elif score < -0.1:
+        return "Negative"
+    else:
+        return "Neutral"
+
+# Apply the labeling function based on each review's sentiment score
+df['ai_label'] = df['sentiment_score'].apply(label_sentiment)
+
+# Print final statistics: how many reviews fall into each category
+print(df['ai_label'].value_counts())
