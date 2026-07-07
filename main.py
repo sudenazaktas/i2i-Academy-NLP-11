@@ -65,3 +65,23 @@ df['ai_label'] = df['sentiment_score'].apply(label_sentiment)
 
 # Print final statistics: how many reviews fall into each category
 print(df['ai_label'].value_counts())
+
+# Compare AI predictions against the dataset's true labels ---
+
+def normalize_true_label(label):
+    
+    #Converts the dataset's original label ('positive'/'negative') into
+    #the same format as our ai_label column, so the two can be compared directly.
+    
+    return "Positive" if label == "positive" else "Negative"
+
+df['true_label'] = df['sentiment'].apply(normalize_true_label)
+
+# Only compare rows where our model predicted Positive or Negative
+# (Neutral predictions have no direct equivalent in the original 2-class dataset)
+comparable = df[df['ai_label'] != 'Neutral']
+
+accuracy = (comparable['ai_label'] == comparable['true_label']).mean()
+
+print(f"\nCompared {len(comparable)} reviews (excluding Neutral predictions)")
+print(f"TextBlob accuracy against true labels: {accuracy:.2%}")
